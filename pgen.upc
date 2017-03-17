@@ -6,24 +6,27 @@
 #include <time.h>
 #include <upc.h>
 
-#include "packingDNAseq.h"
+#include "packingDNAseq_upc.h"
 #include "kmer_hash.h"
-
 
 int main(int argc, char *argv[]){
 
 	/** Declarations **/
 	double inputTime=0.0, constrTime=0.0, traversalTime=0.0;
 
+        // number of threads
+        printf("I am %d of %d\n", MYTHREAD, THREADS);
+        
 	/** Read input **/
 	upc_barrier;
 	inputTime -= gettime();
 	///////////////////////////////////////////
 	// Your code for input file reading here //
-        init_LookupTable();
-        for (int i = 0; i < 256; i++)
-            printf("%d ", packedCodeToFourMer[i]); 
-	///////////////////////////////////////////
+        
+        // initialize the lookup table
+        init_LookupTable(MYTHREAD, THREADS);
+	upc_barrier;
+        ///////////////////////////////////////////
 	upc_barrier;
 	inputTime += gettime();
 
