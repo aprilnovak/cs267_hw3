@@ -20,6 +20,9 @@ int main(int argc, char *argv[]){
 	inputTime -= gettime();
 	///////////////////////////////////////////
 	// Your code for input file reading here //
+        init_LookupTable();
+        for (int i = 0; i < 256; i++)
+            printf("%d ", packedCodeToFourMer[i]); 
 	///////////////////////////////////////////
 	upc_barrier;
 	inputTime += gettime();
