@@ -13,15 +13,25 @@ int main(int argc, char *argv[]){
 
 	/** Declarations **/
 	double inputTime=0.0, constrTime=0.0, traversalTime=0.0;
-        
+        char *input_UFX_name;
+        int64_t nKmers;
+          
+        /* Read the input file name */
+        input_UFX_name = argv[1];
+ 
 	/** Read input **/
 	upc_barrier;
-	inputTime -= gettime();
 	///////////////////////////////////////////
 	// Your code for input file reading here //
         
         // initialize the lookup table
         init_LookupTable(MYTHREAD, THREADS);
+	
+        inputTime -= gettime();
+
+        // get k-mers from input file
+        nKmers = getNumKmersInUFX(input_UFX_name);
+        
         ///////////////////////////////////////////
 	upc_barrier;
 	inputTime += gettime();
