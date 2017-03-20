@@ -8,8 +8,18 @@
 #include <string.h>
 #include "contig_generation.h"
 
+void allocate_memory_heap(int64_t nEntries, memory_heap_t *memory_heap)
+{
+   memory_heap->heap = (kmer_t *) malloc(nEntries * sizeof(kmer_t));
+   if (memory_heap->heap == NULL) {
+      fprintf(stderr, "ERROR: Could not allocate memory for the heap!\n");
+      exit(1);
+   }
+   memory_heap->posInHeap = 0;
+}
+
 /* Creates a hash table and (pre)allocates memory for the memory heap */
-hash_table_t* create_hash_table(int64_t nEntries, memory_heap_t *memory_heap)
+hash_table_t* create_hash_table(int64_t nEntries)
 {
    hash_table_t *result;
    int64_t n_buckets = nEntries * LOAD_FACTOR;
@@ -23,14 +33,7 @@ hash_table_t* create_hash_table(int64_t nEntries, memory_heap_t *memory_heap)
       exit(1);
    }
    
-   memory_heap->heap = (kmer_t *) malloc(nEntries * sizeof(kmer_t));
-   if (memory_heap->heap == NULL) {
-      fprintf(stderr, "ERROR: Could not allocate memory for the heap!\n");
-      exit(1);
-   }
-   memory_heap->posInHeap = 0;
-   
-   return result;
+    return result;
 }
 
 /* Auxiliary function for computing hash values */

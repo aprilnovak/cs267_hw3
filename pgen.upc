@@ -37,7 +37,8 @@ int main(int argc, char *argv[]){
         // initialize the hash table
         hash_table_t *hashtable;
         memory_heap_t memory_heap;
-        hashtable = create_hash_table(nKmers, &memory_heap);
+        allocate_memory_heap(nKmers, &memory_heap); 
+        hashtable = create_hash_table(nKmers);
         
         inputTime += gettime();
         if (MYTHREAD == 0)
