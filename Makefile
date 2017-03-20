@@ -18,7 +18,7 @@ all: 	$(TARGETS)
 serial: serial.c $(HEADERS)
 		$(CC) $(CFLAGS) -o $@ $< -DKMER_LENGTH=$(KMER_LENGTH) -DKMER_PACKED_LENGTH=$(KMER_PACKED_LENGTH) $(LIBS)
 
-pgen:	pgen.upc $(HEADERS) packingDNAseq_upc.h
+pgen:	pgen.upc $(HEADERS) packingDNAseq_upc.h kmer_hash_upc.h
 		$(UPCC) $(UPCFLAGS) -Wc,"$(CFLAGSUPC)" -o $@ $< $(DEFINE) $(LIBS)
 
 clean :

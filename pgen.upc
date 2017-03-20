@@ -7,7 +7,7 @@
 #include <upc.h>
 
 #include "packingDNAseq_upc.h"
-#include "kmer_hash.h"
+#include "kmer_hash_upc.h"
 
 int main(int argc, char *argv[]){
 
@@ -27,14 +27,23 @@ int main(int argc, char *argv[]){
         // initialize the lookup table
         init_LookupTable(MYTHREAD, THREADS);
 	
-        inputTime -= gettime();
 
         // get k-mers from input file
         nKmers = getNumKmersInUFX(input_UFX_name);
+        upc_barrier;
+
+        inputTime -= gettime();
         
+        // initialize the hash table
+        hash_table_t *hashtable;
+        memory_heap_t memory_heap;
+        hashtable = create_hash_table(nKmers, &memory_heap);
+        
+        inputTime += gettime();
+        if (MYTHREAD == 0)
+        printf("Hash table initialization: %f\n\n", inputTime);
         ///////////////////////////////////////////
 	upc_barrier;
-	inputTime += gettime();
 
 	/** Graph construction **/
 	constrTime -= gettime();
