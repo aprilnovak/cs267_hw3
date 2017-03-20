@@ -8,17 +8,19 @@
 #include <string.h>
 #include "contig_generation.h"
 
+/* pre-allocates memory for the memory heap */
 void allocate_memory_heap(int64_t nEntries, memory_heap_t *memory_heap)
 {
    memory_heap->heap = (kmer_t *) malloc(nEntries * sizeof(kmer_t));
-   if (memory_heap->heap == NULL) {
+   if (memory_heap->heap == NULL) 
+   {
       fprintf(stderr, "ERROR: Could not allocate memory for the heap!\n");
       exit(1);
    }
    memory_heap->posInHeap = 0;
 }
 
-/* Creates a hash table and (pre)allocates memory for the memory heap */
+/* Creates a hash table */
 hash_table_t* create_hash_table(int64_t nEntries)
 {
    hash_table_t *result;
@@ -28,7 +30,8 @@ hash_table_t* create_hash_table(int64_t nEntries)
    result->size = n_buckets;
    result->table = (bucket_t*) calloc(n_buckets , sizeof(bucket_t));
    
-   if (result->table == NULL) {
+   if (result->table == NULL) 
+   {
       fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
       exit(1);
    }

@@ -34,11 +34,28 @@ int main(int argc, char *argv[]){
 
         inputTime -= gettime();
         
-        // initialize the hash table
-        hash_table_t *hashtable;
+        // initialize the hash table and memory heap
         memory_heap_t memory_heap;
         allocate_memory_heap(nKmers, &memory_heap); 
-        hashtable = create_hash_table(nKmers);
+
+       hash_table_t *hashtable;
+       int64_t n_buckets = nKmers * LOAD_FACTOR;
+
+       hashtable = (hash_table_t*) malloc(sizeof(hash_table_t));
+       hashtable->size = n_buckets;
+       hashtable->table = (bucket_t*) calloc(n_buckets , sizeof(bucket_t));
+
+       if (hashtable->table == NULL)
+       {
+          fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
+          exit(1);
+       }
+
+
+
+
+
+
         
         inputTime += gettime();
         if (MYTHREAD == 0)
