@@ -6,7 +6,7 @@
 #include <sys/time.h>
 #include <math.h> 
 #include <string.h>
-#include "contig_generation.h"
+#include "contig_generation_upc.h"
 
 /* pre-allocates memory for the memory heap */
 void allocate_memory_heap(int64_t nEntries, memory_heap_t *memory_heap)

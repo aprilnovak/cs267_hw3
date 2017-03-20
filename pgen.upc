@@ -44,14 +44,18 @@ int main(int argc, char *argv[]){
         hashtable = (shared hash_table_t*) upc_all_alloc(THREADS, sizeof(hash_table_t));
 
         hashtable->size = n_buckets;
-        /*hashtable->table = (bucket_t*) calloc(n_buckets , sizeof(bucket_t));
-
-        if (hashtable->table == NULL)
+        // table can be allocated using regular C things by a single thread?
+        if (MYTHREAD == 0)
         {
-           fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
-           exit(1);
-        }*/
-
+            hashtable->table = (bucket_t*) calloc(n_buckets, sizeof(bucket_t));
+/*        
+            if (hashtable->table == NULL)
+            {
+               fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
+               exit(1);
+            }
+*/  
+        }
 
 
 
