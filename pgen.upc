@@ -13,9 +13,6 @@ int main(int argc, char *argv[]){
 
 	/** Declarations **/
 	double inputTime=0.0, constrTime=0.0, traversalTime=0.0;
-
-        // number of threads
-        printf("I am %d of %d\n", MYTHREAD, THREADS);
         
 	/** Read input **/
 	upc_barrier;
@@ -25,7 +22,6 @@ int main(int argc, char *argv[]){
         
         // initialize the lookup table
         init_LookupTable(MYTHREAD, THREADS);
-	upc_barrier;
         ///////////////////////////////////////////
 	upc_barrier;
 	inputTime += gettime();

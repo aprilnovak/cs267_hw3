@@ -12,11 +12,13 @@ shared [] unsigned int packedCodeToFourMer[256];
 void init_LookupTable(THREAD, THREADS)
 {
         int itersize = (256 + THREADS - 1) / THREADS;
-	// Work with 4-mers for the moment to have small lookup tables
+        int start = THREAD * itersize;
+        int end = 256 < (THREAD + 1) * itersize ? 256: (THREAD + 1)* itersize;
+	
+        // Work with 4-mers for the moment to have small lookup tables
 	int merLen = 4, i, slot, valInSlot;
 	unsigned char mer[4];
-
-	for ( i = THREAD * itersize; i < (THREAD+1)*itersize; i++ ) {
+	for ( i = start; i < end; i++ ) {
 		// convert a packedcode to a 4-mer
 		int remainder = i;
 		int pos = 0;
