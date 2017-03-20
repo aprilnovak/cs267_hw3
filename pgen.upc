@@ -32,25 +32,25 @@ int main(int argc, char *argv[]){
         nKmers = getNumKmersInUFX(input_UFX_name);
         upc_barrier;
 
+
         inputTime -= gettime();
         
         // initialize the hash table and memory heap
+        int64_t n_buckets = nKmers * LOAD_FACTOR;
         memory_heap_t memory_heap;
         allocate_memory_heap(nKmers, &memory_heap); 
 
-       hash_table_t *hashtable;
-       int64_t n_buckets = nKmers * LOAD_FACTOR;
+        shared hash_table_t *hashtable; // private to shared
+        hashtable = (shared hash_table_t*) upc_all_alloc(THREADS, sizeof(hash_table_t));
 
-       hashtable = (hash_table_t*) malloc(sizeof(hash_table_t));
-       hashtable->size = n_buckets;
-       hashtable->table = (bucket_t*) calloc(n_buckets , sizeof(bucket_t));
+        hashtable->size = n_buckets;
+        /*hashtable->table = (bucket_t*) calloc(n_buckets , sizeof(bucket_t));
 
-       if (hashtable->table == NULL)
-       {
-          fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
-          exit(1);
-       }
-
+        if (hashtable->table == NULL)
+        {
+           fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
+           exit(1);
+        }*/
 
 
 
