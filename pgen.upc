@@ -13,13 +13,12 @@ int main(int argc, char *argv[]){
 
 	/** Declarations **/
 	double inputTime=0.0, constrTime=0.0, traversalTime=0.0;
-        char *input_UFX_name;
-        int64_t nKmers;
-          
-        /* Read the input file name */
-        input_UFX_name = argv[1];
+         
  
-	/** Read input **/
+        /* Read the input file name */
+        char *input_UFX_name = argv[1];
+
+ 
 	upc_barrier;
 	///////////////////////////////////////////
 	// Your code for input file reading here //
@@ -29,35 +28,48 @@ int main(int argc, char *argv[]){
 	
 
         // get k-mers from input file
-        nKmers = getNumKmersInUFX(input_UFX_name);
+        int64_t nKmers = getNumKmersInUFX(input_UFX_name);
         upc_barrier;
 
 
         inputTime -= gettime();
-        
+       
+ 
         // initialize the hash table and memory heap
         int64_t n_buckets = nKmers * LOAD_FACTOR;
         memory_heap_t memory_heap;
         allocate_memory_heap(nKmers, &memory_heap); 
 
-        shared hash_table_t *hashtable; // private to shared
-        hashtable = (shared hash_table_t*) upc_all_alloc(THREADS, sizeof(hash_table_t));
 
-        hashtable->size = n_buckets;
+        // creates a shared to shared pointer to the hashtable
+        shared hash_table_t *hashtable;
+        hashtable = (shared hash_table_t*) upc_all_alloc(THREADS, sizeof(hash_table_t));
+        if (MYTHREAD == 0)
+        {
+            printf("........................");
+            hashtable-> size = 12345;
+        }   
+        printf("\n\nAddress: %p, Value: %d,  thread %d\n\n", (void *)hashtable, hashtable-> size, MYTHREAD);
+
+
+
+
+/*
         // table can be allocated using regular C things by a single thread?
         if (MYTHREAD == 0)
         {
+            hashtable->size = n_buckets;
             hashtable->table = (bucket_t*) calloc(n_buckets, sizeof(bucket_t));
-/*        
+        
             if (hashtable->table == NULL)
             {
                fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
                exit(1);
             }
-*/  
+  
         }
 
-
+*/
 
 
         
