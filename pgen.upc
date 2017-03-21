@@ -9,6 +9,8 @@
 #include "packingDNAseq_upc.h"
 #include "kmer_hash_upc.h"
 
+
+
 int main(int argc, char *argv[]){
 
 	/** Declarations **/
@@ -44,22 +46,14 @@ int main(int argc, char *argv[]){
         // creates a shared to shared pointer to the hashtable
         shared hash_table_t *hashtable;
         hashtable = (shared hash_table_t*) upc_all_alloc(THREADS, sizeof(hash_table_t));
-        if (MYTHREAD == 0)
-        {
-            printf("........................");
-            hashtable-> size = 12345;
-        }   
-        printf("\n\nAddress: %p, Value: %d,  thread %d\n\n", (void *)hashtable, hashtable-> size, MYTHREAD);
 
+        hashtable->table = (shared bucket_t*) upc_all_alloc(THREADS, n_buckets * sizeof(bucket_t));
 
-
-
-/*
-        // table can be allocated using regular C things by a single thread?
-        if (MYTHREAD == 0)
+        upc_barrier;
+/*        if (MYTHREAD == 0)
         {
             hashtable->size = n_buckets;
-            hashtable->table = (bucket_t*) calloc(n_buckets, sizeof(bucket_t));
+            hashtable->table = (shared bucket_t*) upc_global_alloc(1, n_buckets * sizeof(bucket_t));
         
             if (hashtable->table == NULL)
             {
@@ -68,14 +62,18 @@ int main(int argc, char *argv[]){
             }
   
         }
-
 */
+
+        if (MYTHREAD == 0)
+        {
+            printf("........................");
+        }   
+        printf("\n\nAddress of __table__ pointer: %p,  thread %d\n\n", (void *)hashtable->table, MYTHREAD);
+
 
 
         
         inputTime += gettime();
-        if (MYTHREAD == 0)
-        printf("Hash table initialization: %f\n\n", inputTime);
         ///////////////////////////////////////////
 	upc_barrier;
 

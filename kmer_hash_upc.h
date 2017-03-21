@@ -20,24 +20,6 @@ void allocate_memory_heap(int64_t nEntries, memory_heap_t *memory_heap)
    memory_heap->posInHeap = 0;
 }
 
-/* Creates a hash table */
-hash_table_t* create_hash_table(int64_t nEntries)
-{
-   hash_table_t *result;
-   int64_t n_buckets = nEntries * LOAD_FACTOR;
-
-   result = (hash_table_t*) malloc(sizeof(hash_table_t));
-   result->size = n_buckets;
-   result->table = (bucket_t*) calloc(n_buckets , sizeof(bucket_t));
-   
-   if (result->table == NULL) 
-   {
-      fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
-      exit(1);
-   }
-   
-    return result;
-}
 
 /* Auxiliary function for computing hash values */
 int64_t hashseq(int64_t  hashtable_size, char *seq, int size)
@@ -124,11 +106,12 @@ int dealloc_heap(memory_heap_t *memory_heap)
    return 0;
 }
 
+/*
 int dealloc_hashtable(hash_table_t *hashtable)
 {
    free(hashtable->table);
    return 0;
 }
-
+*/
 
 #endif // KMER_HASH_H
