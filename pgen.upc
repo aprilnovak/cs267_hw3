@@ -9,8 +9,6 @@
 #include "packingDNAseq_upc.h"
 #include "kmer_hash_upc.h"
 
-
-
 int main(int argc, char *argv[]){
 
 	/** Declarations **/
@@ -39,9 +37,6 @@ int main(int argc, char *argv[]){
  
         // initialize the hash table and memory heap
         int64_t n_buckets = nKmers * LOAD_FACTOR;
-        memory_heap_t memory_heap;
-        allocate_memory_heap(nKmers, &memory_heap); 
-
 
         // creates a shared to shared pointer to the hashtable
         shared hash_table_t *hashtable;
@@ -50,10 +45,10 @@ int main(int argc, char *argv[]){
         hashtable->table = (shared bucket_t*) upc_all_alloc(THREADS, n_buckets * sizeof(bucket_t));
 
         upc_barrier;
-/*        if (MYTHREAD == 0)
+        if (MYTHREAD == 0)
         {
             hashtable->size = n_buckets;
-            hashtable->table = (shared bucket_t*) upc_global_alloc(1, n_buckets * sizeof(bucket_t));
+//            hashtable->table = (shared bucket_t*) upc_global_alloc(1, n_buckets * sizeof(bucket_t));
         
             if (hashtable->table == NULL)
             {
@@ -62,16 +57,28 @@ int main(int argc, char *argv[]){
             }
   
         }
-*/
+
+
+
+
+        shared memory_heap_t* memory_heap;
+        memory_heap->heap = (shared kmer_t *) upc_all_alloc(THREADS, nKmers * sizeof(kmer_t));
+
+        if (memory_heap->heap == NULL)
+        {
+           fprintf(stderr, "ERROR: Could not allocate memory for the heap!\n");
+           exit(1);
+        }
+
+        if (MYTHREAD == 0)
+            memory_heap->posInHeap = 0;
 
         if (MYTHREAD == 0)
         {
             printf("........................");
         }   
-        printf("\n\nAddress of __table__ pointer: %p,  thread %d\n\n", (void *)hashtable->table, MYTHREAD);
-
-
-
+        printf("\n\nAddress of hashtable->table pointer: %p,  thread %d\n\n", (void *)hashtable->table, MYTHREAD);
+        printf("Address of memory_heap->heap pointer: %p, position: %d,   thread %d\n", (void*)memory_heap->heap, memory_heap->posInHeap, MYTHREAD);
         
         inputTime += gettime();
         ///////////////////////////////////////////

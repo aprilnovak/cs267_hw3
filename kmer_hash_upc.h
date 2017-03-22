@@ -7,8 +7,8 @@
 #include <math.h> 
 #include <string.h>
 #include "contig_generation_upc.h"
-
-/* pre-allocates memory for the memory heap */
+/*
+// pre-allocates memory for the memory heap 
 void allocate_memory_heap(int64_t nEntries, memory_heap_t *memory_heap)
 {
    memory_heap->heap = (kmer_t *) malloc(nEntries * sizeof(kmer_t));
@@ -19,7 +19,7 @@ void allocate_memory_heap(int64_t nEntries, memory_heap_t *memory_heap)
    }
    memory_heap->posInHeap = 0;
 }
-
+*/
 
 /* Auxiliary function for computing hash values */
 int64_t hashseq(int64_t  hashtable_size, char *seq, int size)
@@ -60,32 +60,34 @@ kmer_t* lookup_kmer(hash_table_t *hashtable, const unsigned char *kmer)
    return NULL;
 }
 
-/* Adds a kmer and its extensions in the hash table (note that a memory heap should be preallocated. ) */
+/*
+// Adds a kmer and its extensions in the hash table (note that a memory heap should be preallocated. ) 
 int add_kmer(hash_table_t *hashtable, memory_heap_t *memory_heap, const unsigned char *kmer, char left_ext, char right_ext)
 {
-   /* Pack a k-mer sequence appropriately */
+   // Pack a k-mer sequence appropriately 
    char packedKmer[KMER_PACKED_LENGTH];
    packSequence(kmer, (unsigned char*) packedKmer, KMER_LENGTH);
    int64_t hashval = hashkmer(hashtable->size, (char*) packedKmer);
    int64_t pos = memory_heap->posInHeap;
    
-   /* Add the contents to the appropriate kmer struct in the heap */
+   // Add the contents to the appropriate kmer struct in the heap 
    memcpy((memory_heap->heap[pos]).kmer, packedKmer, KMER_PACKED_LENGTH * sizeof(char));
    (memory_heap->heap[pos]).l_ext = left_ext;
    (memory_heap->heap[pos]).r_ext = right_ext;
    
-   /* Fix the next pointer to point to the appropriate kmer struct */
+   // Fix the next pointer to point to the appropriate kmer struct 
    (memory_heap->heap[pos]).next = hashtable->table[hashval].head;
-   /* Fix the head pointer of the appropriate bucket to point to the current kmer */
+   // Fix the head pointer of the appropriate bucket to point to the current kmer 
    hashtable->table[hashval].head = &(memory_heap->heap[pos]);
    
-   /* Increase the heap pointer */
+   // Increase the heap pointer
    memory_heap->posInHeap++;
    
    return 0;
 }
 
-/* Adds a k-mer in the start list by using the memory heap (the k-mer was "just added" in the memory heap at position posInHeap - 1) */
+
+// Adds a k-mer in the start list by using the memory heap (the k-mer was "just added" in the memory heap at position posInHeap - 1)
 void addKmerToStartList(memory_heap_t *memory_heap, start_kmer_t **startKmersList)
 {
    start_kmer_t *new_entry;
@@ -99,13 +101,13 @@ void addKmerToStartList(memory_heap_t *memory_heap, start_kmer_t **startKmersLis
    (*startKmersList) = new_entry;
 }
 
-/* Deallocation functions */
+// Deallocation functions
 int dealloc_heap(memory_heap_t *memory_heap)
 {
    free(memory_heap->heap);
    return 0;
 }
-
+*/
 /*
 int dealloc_hashtable(hash_table_t *hashtable)
 {
