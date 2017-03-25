@@ -37,49 +37,69 @@ int main(int argc, char *argv[]){
  
         // initialize the hash table and memory heap
         int64_t n_buckets = nKmers * LOAD_FACTOR;
-
+        
+        upc_barrier;
         // creates a shared to shared pointer to the hashtable
         shared hash_table_t *hashtable;
         hashtable = (shared hash_table_t*) upc_all_alloc(THREADS, sizeof(hash_table_t));
-
         hashtable->table = (shared bucket_t*) upc_all_alloc(THREADS, n_buckets * sizeof(bucket_t));
+        shared hash_table_t *my_hashtable;
+        my_hashtable = hashtable; // have to do this to get each thread to have the same address for the pointer to the hash table?
 
-        upc_barrier;
         if (MYTHREAD == 0)
         {
             hashtable->size = n_buckets;
-//            hashtable->table = (shared bucket_t*) upc_global_alloc(1, n_buckets * sizeof(bucket_t));
         
             if (hashtable->table == NULL)
             {
-               fprintf(stderr, "ERROR: Could not allocate memory for the hash table: %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
+               fprintf(stderr, "ERROR: Could not allocate memory for the hash table: \
+                        %lld buckets of %lu bytes\n", n_buckets, sizeof(bucket_t));
                exit(1);
             }
   
         }
 
 
-
-
-        shared memory_heap_t* memory_heap;
+        // creates a private to shared pointer to the memory heap
+        shared memory_heap_t *memory_heap;
         memory_heap->heap = (shared kmer_t *) upc_all_alloc(THREADS, nKmers * sizeof(kmer_t));
+        shared memory_heap_t *my_memory_heap;
+        my_memory_heap = memory_heap;
 
-        if (memory_heap->heap == NULL)
-        {
-           fprintf(stderr, "ERROR: Could not allocate memory for the heap!\n");
-           exit(1);
-        }
 
         if (MYTHREAD == 0)
+        {
+            if (memory_heap->heap == NULL)
+            {
+               fprintf(stderr, "ERROR: Could not allocate memory for the heap!\n");
+               exit(1);
+            }
             memory_heap->posInHeap = 0;
+        }
 
         if (MYTHREAD == 0)
         {
             printf("........................");
         }   
-        printf("\n\nAddress of hashtable->table pointer: %p,  thread %d\n\n", (void *)hashtable->table, MYTHREAD);
+        printf("\n\nAddress of hashtable->table pointer: %p, size: %d,  thread %d, %d\n\n", (void *)my_hashtable->table, my_hashtable->size, MYTHREAD, upc_threadof(hashtable->table));
         printf("Address of memory_heap->heap pointer: %p, position: %d,   thread %d\n", (void*)memory_heap->heap, memory_heap->posInHeap, MYTHREAD);
-        
+   
+
+ 
+        /* Read the kmers from the input file and store them in the working_buffer */
+       int64_t total_chars_to_read = nKmers * LINE_SIZE;
+       shared unsigned char *working_buffer = (shared unsigned char*) upc_all_alloc(THREADS, total_chars_to_read * sizeof(unsigned char));
+       shared unsigned char* my_working_buffer;
+        my_working_buffer = working_buffer;
+
+        if (MYTHREAD == 0)
+        {
+            FILE* inputFile = fopen(input_UFX_name, "r");
+            int64_t cur_chars_read = fread((unsigned char*) my_working_buffer, sizeof(unsigned char),total_chars_to_read , inputFile);
+            fclose(inputFile);
+            printf("Working buffer entry 1: %c\n\n", *(my_working_buffer+0));
+        }
+ 
         inputTime += gettime();
         ///////////////////////////////////////////
 	upc_barrier;
